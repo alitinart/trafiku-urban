@@ -1,12 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, Modal, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Modal, StyleSheet, Button, FlatList } from "react-native";
+import BusStatus from "./home/BusStatus";
+import Bus from "../../models/Bus";
 
 interface Props {
   visible: boolean;
   onClose: () => any;
+  title: string;
+  text: string;
+  data: { bus: Bus; timeLeft: number }[];
 }
 
-export default function UiModal({ visible, onClose }: Props) {
+export default function UiModal({ visible, onClose, title, data }: Props) {
+  const [show, setShow] = useState(false);
   return (
     <Modal
       animationType="slide"
@@ -16,10 +22,12 @@ export default function UiModal({ visible, onClose }: Props) {
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text>This is a Half-Screen Modal</Text>
-          <TouchableOpacity onPress={onClose}>
-            <Text>Close Modal</Text>
-          </TouchableOpacity>
+          <Button title="Close" onPress={onClose} />
+          <Text style={styles.title}>{title}</Text>
+          <FlatList
+            data={data}
+            renderItem={(itemData) => <BusStatus {...itemData.item} />}
+          />
         </View>
       </View>
     </Modal>
@@ -39,5 +47,11 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     padding: 20,
+  },
+  title: {
+    textAlign: "center",
+    fontWeight: "bold",
+    fontSize: 26,
+    marginBottom: 10,
   },
 });

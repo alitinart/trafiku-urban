@@ -2,9 +2,12 @@ import { StyleSheet, Text, View } from "react-native";
 import UiModal from "../components/ui/UiModal";
 import Map from "../components/ui/home/Map";
 import { useState } from "react";
+import { useSelector } from "react-redux";
+import State from "../models/State";
 
 export default function Home() {
   const [visibe, setVisible] = useState(false);
+  const currentStation = useSelector((state: State) => state.selectedStation);
 
   function onStationPress() {
     setVisible(true);
@@ -15,9 +18,12 @@ export default function Home() {
       <Map onMarkerPress={onStationPress} />
       <UiModal
         visible={visibe}
+        title={currentStation.title}
+        text={currentStation.description}
         onClose={() => {
           setVisible(false);
         }}
+        data={currentStation.busesComing}
       />
     </View>
   );
