@@ -13,9 +13,9 @@ export const busStations: Station[] = [
     busesComing: [
       {
         bus: {
-          type: "3",
-          latitude: 42.0,
-          longitude: 21,
+          type: "3C",
+          latitude: 42.652831857434435,
+          longitude: 21.17446806281805,
         },
       },
     ],
@@ -32,9 +32,9 @@ export const busStations: Station[] = [
     busesComing: [
       {
         bus: {
-          type: "3C",
-          latitude: 42.0,
-          longitude: 21,
+          type: "3",
+          latitude: 42.65861699883948,
+          longitude: 21.18081048130989,
         },
       },
     ],
