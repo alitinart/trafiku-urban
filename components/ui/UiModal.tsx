@@ -12,7 +12,6 @@ interface Props {
 }
 
 export default function UiModal({ visible, onClose, title, data }: Props) {
-  const [show, setShow] = useState(false);
   return (
     <Modal
       animationType="slide"

@@ -1,4 +1,4 @@
-import { Station } from "../components/ui/home/Map";
+import Station from "./Station";
 
 export default interface State {
   selectedStation: Station;

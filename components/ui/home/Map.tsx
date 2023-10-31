@@ -9,14 +9,7 @@ import DebugMarker from "../../utils/DebugMarker";
 
 import { useDispatch } from "react-redux";
 import { setSelectedStation } from "../../../store/reducers/root.reducer";
-import Bus from "../../../models/Bus";
-
-export interface Station {
-  title: string;
-  location: Region;
-  description: string;
-  busesComing: { bus: Bus; timeLeft: number }[];
-}
+import Station from "../../../models/Station";
 
 interface Props {
   onMarkerPress: () => any;
