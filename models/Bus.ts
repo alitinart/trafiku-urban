@@ -1,5 +1,7 @@
 export default interface Bus {
   type: "3C" | "3" | "5";
+  latitude: number;
+  longitude: number;
 }
 
 export function returnBusColor(type: string) {

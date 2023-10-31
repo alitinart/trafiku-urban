@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import { View, Text, Modal, StyleSheet, Button, FlatList } from "react-native";
-import BusStatus from "./home/BusStatus";
-import Bus from "../../models/Bus";
+import React, { useRef } from "react";
+import { View, Text, Modal, StyleSheet, FlatList } from "react-native";
+import BusStatus from "./BusStatus";
+import Bus from "../../../models/Bus";
+import { Button } from "react-native";
 
 interface Props {
   visible: boolean;
   onClose: () => any;
   title: string;
   text: string;
-  data: { bus: Bus; timeLeft: number }[];
+  data: { bus: Bus }[];
 }
 
-export default function UiModal({ visible, onClose, title, data }: Props) {
+export default function StationModal({ visible, onClose, title, data }: Props) {
   return (
     <Modal
       animationType="slide"

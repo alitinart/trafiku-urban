@@ -10,6 +10,7 @@ import DebugMarker from "../../utils/DebugMarker";
 import { useDispatch } from "react-redux";
 import { setSelectedStation } from "../../../store/reducers/root.reducer";
 import Station from "../../../models/Station";
+import { busStations } from "../../../data/stations";
 
 interface Props {
   onMarkerPress: () => any;
@@ -22,46 +23,6 @@ export default function Map({ onMarkerPress }: Props) {
   const mapRef = useRef<MapView>(null);
 
   const dispatch = useDispatch();
-
-  // Would be fetched from backend...
-  const busStations: Station[] = [
-    {
-      title: "Stacioni Termokos",
-      location: {
-        latitude: 42.6528319,
-        longitude: 21.174467,
-        latitudeDelta: 0.001,
-        longitudeDelta: 0.001,
-      },
-      description: "Nenstactioni i Termokosit",
-      busesComing: [
-        {
-          bus: {
-            type: "3",
-          },
-          timeLeft: 12,
-        },
-      ],
-    },
-    {
-      title: "Stacioni Maxi 24h",
-      location: {
-        latitude: 42.65223067684647,
-        longitude: 21.176215186715122,
-        latitudeDelta: 0.001,
-        longitudeDelta: 0.001,
-      },
-      description: "Stacioni te Maxi 24h",
-      busesComing: [
-        {
-          bus: {
-            type: "3C",
-          },
-          timeLeft: 12,
-        },
-      ],
-    },
-  ];
 
   function handleMarkerPress(station: Station) {
     if (mapRef.current == null) {
@@ -121,7 +82,6 @@ export default function Map({ onMarkerPress }: Props) {
       ref={mapRef}
       initialRegion={region}
       region={region}
-      zoomEnabled={true}
       showsUserLocation={true}
       style={styles.map}
     >

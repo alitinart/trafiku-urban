@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
-import UiModal from "../components/ui/UiModal";
+import StationModal from "../components/ui/home/StationModal";
 import Map from "../components/ui/home/Map";
 import { useState } from "react";
 import { useSelector } from "react-redux";
@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <Map onMarkerPress={onStationPress} />
-      <UiModal
+      <StationModal
         visible={visibe}
         title={currentStation.title}
         text={currentStation.description}
