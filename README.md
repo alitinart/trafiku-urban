@@ -7,7 +7,7 @@ It's supposed to track buses and bus stations around Prishtina and give the user
 
 ## App Previews:
 
-<img src="photos/image.png" width="500">
+<img src="photos/image.png">
 <p align="center">
   <img src="photos/image_2.png" width="250" >
 </p>
