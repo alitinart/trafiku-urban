@@ -26,10 +26,9 @@ export default function BusStatus({ bus }: Props) {
         <Text style={styles.time}>
           {computeDistanceInMinutes(
             {
-              latitude: selectedStation.location.latitude,
-              longitude: selectedStation.location.longitude,
+              ...selectedStation.location,
             },
-            { latitude: bus.latitude, longitude: bus.longitude }
+            { ...bus.location }
           )}{" "}
           min
         </Text>

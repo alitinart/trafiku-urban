@@ -4,6 +4,8 @@ import Map from "../components/ui/home/Map";
 import { useState } from "react";
 import { useSelector } from "react-redux";
 import State from "../models/State";
+import { busses } from "../data/busses";
+import { computeDistanceInMinutes } from "../service/computeDistance";
 
 export default function Home() {
   const [visibe, setVisible] = useState(false);
@@ -11,6 +13,16 @@ export default function Home() {
 
   function onStationPress() {
     setVisible(true);
+  }
+
+  function getCloseBusses() {
+    return busses.filter((bus) => {
+      const distance = computeDistanceInMinutes(
+        { ...bus.location },
+        { ...currentStation.location }
+      );
+      return distance > 0 && distance <= 15;
+    });
   }
 
   return (
@@ -23,7 +35,7 @@ export default function Home() {
         onClose={() => {
           setVisible(false);
         }}
-        data={currentStation.busesComing}
+        data={getCloseBusses()}
       />
     </View>
   );

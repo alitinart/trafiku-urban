@@ -9,7 +9,7 @@ interface Props {
   onClose: () => any;
   title: string;
   text: string;
-  data: { bus: Bus }[];
+  data: Bus[];
 }
 
 export default function StationModal({ visible, onClose, title, data }: Props) {
@@ -26,7 +26,7 @@ export default function StationModal({ visible, onClose, title, data }: Props) {
           <Text style={styles.title}>{title}</Text>
           <FlatList
             data={data}
-            renderItem={(itemData) => <BusStatus {...itemData.item} />}
+            renderItem={(itemData) => <BusStatus bus={itemData.item} />}
           />
         </View>
       </View>

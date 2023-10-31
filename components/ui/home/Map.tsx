@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux";
 import { setSelectedStation } from "../../../store/reducers/root.reducer";
 import Station from "../../../models/Station";
 import { busStations } from "../../../data/stations";
+import { busses } from "../../../data/busses";
 
 interface Props {
   onMarkerPress: () => any;
@@ -23,6 +24,24 @@ export default function Map({ onMarkerPress }: Props) {
   const mapRef = useRef<MapView>(null);
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        alert("We need permissions for this app");
+        return;
+      }
+
+      let loc = await Location.getCurrentPositionAsync();
+      setRegion({
+        latitude: loc.coords.latitude,
+        longitude: loc.coords.longitude,
+        longitudeDelta: 0.01,
+        latitudeDelta: 0.01,
+      });
+    })();
+  }, []);
 
   function handleMarkerPress(station: Station) {
     if (mapRef.current == null) {
@@ -58,23 +77,18 @@ export default function Map({ onMarkerPress }: Props) {
     });
   }
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        alert("We need permissions for this app");
-        return;
-      }
-
-      let loc = await Location.getCurrentPositionAsync();
-      setRegion({
-        latitude: loc.coords.latitude,
-        longitude: loc.coords.longitude,
-        longitudeDelta: 0.01,
-        latitudeDelta: 0.01,
-      });
-    })();
-  }, []);
+  function showShowBusMarkers() {
+    return busses.map((bus, index) => {
+      return (
+        <Marker
+          key={index}
+          identifier={index.toString()}
+          coordinate={bus.location}
+          title={bus.type}
+        />
+      );
+    });
+  }
 
   return region ? (
     <MapView
@@ -86,6 +100,7 @@ export default function Map({ onMarkerPress }: Props) {
       style={styles.map}
     >
       {showStactionMarkers()}
+      {showShowBusMarkers()}
       <DebugMarker intialRegion={region} />
     </MapView>
   ) : (

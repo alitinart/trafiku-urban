@@ -6,29 +6,20 @@ export default function computeDistance(
   firstRegion: LatLng | Region,
   secondRegion: LatLng | Region
 ) {
-  const earthRadius = 6371;
+  const firstLat = toRad(firstRegion.latitude);
+  const firstLon = toRad(firstRegion.longitude);
+  const secondLat = toRad(secondRegion.latitude);
+  const secondLon = toRad(secondRegion.longitude);
 
-  const lat1Rad = toRad(firstRegion.latitude);
-  const lon1Rad = toRad(firstRegion.longitude);
-  const lat2Rad = toRad(secondRegion.latitude);
-  const lon2Rad = toRad(secondRegion.longitude);
-
-  const dLat = lat2Rad - lat1Rad;
-  const dLon = lon2Rad - lon1Rad;
-
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1Rad) *
-      Math.cos(lat2Rad) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-  // Calculate the distance
-  const distance = earthRadius * c;
-
-  return distance;
+  return (
+    6377.830272 *
+    Math.acos(
+      Math.sin(firstLat) * Math.sin(secondLat) +
+        Math.cos(firstLat) *
+          Math.cos(secondLat) *
+          Math.cos(secondLon - firstLon)
+    )
+  );
 }
 
 function toRad(angle: number) {

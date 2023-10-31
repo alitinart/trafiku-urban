@@ -1,7 +1,9 @@
 export default interface Bus {
-  type: "3C" | "3" | "5";
-  latitude: number;
-  longitude: number;
+  type: "3C" | "3B" | "3" | "5";
+  location: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export function returnBusColor(type: string) {
@@ -12,5 +14,7 @@ export function returnBusColor(type: string) {
       return "#7678ED";
     case "5":
       return "#F7B801";
+    case "3B":
+      return "#FBBC05";
   }
 }
