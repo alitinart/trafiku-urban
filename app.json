@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "Trafiku Urban",
+    "slug": "trafiku-urban",
+    "scheme": "trafiku",
+    "version": "2.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#ECEEEA",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.alitinart.trafikuurban",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Trafiku uses your location to show the bus stop closest to you."
+      }
+    },
+    "android": {
+      "package": "com.alitinart.trafikuurban",
+      "adaptiveIcon": {
+        "backgroundColor": "#15171A",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      },
+      "permissions": ["ACCESS_COARSE_LOCATION"]
+    },
+    "web": {
+      "output": "single",
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png",
+      "name": "Trafiku Urban",
+      "shortName": "Trafiku",
+      "themeColor": "#ECEEEA",
+      "backgroundColor": "#ECEEEA"
+    },
+    "plugins": [
+      "expo-font",
+      [
+        "expo-splash-screen",
+        { "image": "./assets/splash-icon.png", "imageWidth": 120, "backgroundColor": "#ECEEEA" }
+      ],
+      [
+        "expo-location",
+        { "locationWhenInUsePermission": "Trafiku uses your location to show the bus stop closest to you." }
+      ]
+    ]
+  }
+}
