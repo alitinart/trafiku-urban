@@ -1,0 +1,6 @@
+node_modules
+dist
+.expo
+scripts/cache
+photos
+*.log
