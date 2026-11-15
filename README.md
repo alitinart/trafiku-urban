@@ -4,7 +4,7 @@ A live 3D map of Prishtina's city buses. All 19 Trafiku Urban lines drive their 
 
 **Live demo: [trafiku-urban.vercel.app](https://trafiku-urban.vercel.app)**. On a phone, use "Add to Home Screen" and it opens full screen like an installed app.
 
-![A stop selected on the 3D map, with arrivals listed in the side panel](docs/desktop.jpg)
+![Trafiku Urban in a desktop browser and on an iPhone, showing stop arrivals and a followed line 4 bus](docs/cover.jpg)
 
 The app is one React Native codebase built with Expo. The same code runs as the hosted web app, and EAS can build it for the App Store and Google Play.
 
@@ -19,8 +19,8 @@ The app is one React Native codebase built with Expo. The same code runs as the 
 - All 245 stops sit on the road. Each one is a real OpenStreetMap bus stop, moved onto the route line.
 
 <p>
-  <img src="docs/phone-home.jpg" width="260" alt="Home view with buses on the map" />
-  <img src="docs/phone-bus.jpg" width="260" alt="Following a line 1 bus" />
+  <img src="docs/phone-home.jpg" width="260" alt="Home view with buses on the 3D map" />
+  <img src="docs/phone-bus.jpg" width="260" alt="Following a line 4 bus to Parku i Gërmisë" />
 </p>
 
 ## The bus positions are simulated
