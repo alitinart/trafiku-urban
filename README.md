@@ -1,22 +1,22 @@
 # Trafiku Urban
 
-A live 3D map of Prishtina's city buses. All 19 Trafiku Urban lines drive their real routes. Tap a bus to see its route and next stops. Tap a stop to see what's arriving.
+A live 3D map of Prishtina's city buses. All 19 Trafiku Urban lines drive their real routes. Tap a bus to see where it goes next. Tap a stop to see what's arriving.
 
 **Live demo: [trafiku-urban.vercel.app](https://trafiku-urban.vercel.app)**. On a phone, use "Add to Home Screen" and it opens full screen like an installed app.
 
-![Trafiku Urban on desktop and phone](docs/cover.png)
+![A stop selected on the 3D map, with arrivals listed in the side panel](docs/desktop.jpg)
 
-It's one React Native (Expo) codebase. The same code runs as the hosted web app, and it can be built for the App Store and Google Play with EAS.
+The app is one React Native codebase built with Expo. The same code runs as the hosted web app, and EAS can build it for the App Store and Google Play.
 
 ## What it does
 
 - The map opens on Prishtina, tilted, with 3D buildings.
-- 97 buses move along 19 lines (1, 1A, 2, 3, 3A, 3B, 3C, 4, 6, 6A, 7, 7A, 7B, 7C, 8, 10, 10C, 15, 19). Each line has its own colour. Variants of a line share a hue, so the 3s are blues and the 7s are purples.
+- 97 buses move along lines 1, 1A, 2, 3, 3A, 3B, 3C, 4, 6, 6A, 7, 7A, 7B, 7C, 8, 10, 10C, 15 and 19. Each line has its own colour. Variants share a hue, so the 3s are blues and the 7s are purples.
 - Tapping a bus highlights its route, dims the other lines and follows the bus with the camera. The panel lists its next stops with minutes and clock times.
 - Tapping a stop shows the next six arrivals across every line that serves it, soonest first.
-- Search is accent-insensitive, so "deshmoret" finds "Dëshmorët" and "3c" finds line 3C.
+- Search ignores accents, so "deshmoret" finds "Dëshmorët" and "3c" finds line 3C.
 - The locate button jumps to the stop nearest to you. Outside Prishtina it falls back to the city centre.
-- All 245 stops sit on the road. Each one is a real OpenStreetMap bus stop, projected onto the route geometry.
+- All 245 stops sit on the road. Each one is a real OpenStreetMap bus stop, moved onto the route line.
 
 <p>
   <img src="docs/phone-home.jpg" width="260" alt="Home view with buses on the map" />
@@ -25,21 +25,21 @@ It's one React Native (Expo) codebase. The same code runs as the hosted web app,
 
 ## The bus positions are simulated
 
-Prishtina has no public real-time GPS feed, so the buses run on a timetable that I generate. Each bus speeds up from a stop, cruises at 26 to 38 km/h, brakes into the next stop and waits 10 to 26 seconds. Positions come from the wall clock, so two people opening the app at the same time see the same buses in the same places. The live state costs zero network requests.
+Prishtina has no public real-time GPS feed, so the buses run on a timetable I generate. Each bus speeds up from a stop, cruises at 26 to 38 km/h, brakes into the next stop and waits 10 to 26 seconds. Positions come from the wall clock. Two people who open the app at the same moment see the same buses in the same places, and the live state costs zero network requests.
 
 The routes and stops are real. The timing is not. The app says so in the home panel.
 
 ## How the data is built
 
-`scripts/build-network.mjs` produces `src/data/network.json` (188 KB). It runs once at dev time, not in the app.
+`scripts/build-network.mjs` writes `src/data/network.json`, a 188 KB file. It runs once at dev time, never in the app.
 
 1. It pulls the 33 Trafiku Urban route relations and every bus stop in the area from the OpenStreetMap Overpass API.
-2. OSM relation members are often out of order, so it samples a point every 350 m along each relation's ways and orders the points as a path between the two farthest ends (nearest-neighbour, then 2-opt).
-3. It routes through those points with OSRM. Each waypoint carries a bearing, so it snaps to the carriageway going the right way. Without that, dual carriageways produced U-turn detours: the airport line came out at 115 km.
-4. When one leg is still much longer than the straight-line gap, it drops that waypoint and routes again.
-5. It snaps OSM bus stops within 18 to 30 m of the route onto the line, then simplifies the geometry with Douglas-Peucker (1.2 m tolerance).
+2. OSM relation members are often out of order. The script samples a point every 350 m along each relation's ways and orders the points as a path between the two farthest ends, using nearest-neighbour and then 2-opt.
+3. It routes through those points with OSRM. Each waypoint carries a bearing, so it snaps to the carriageway going the right way. Before I added bearings, dual carriageways produced U-turn detours and the airport line came out at 115 km.
+4. If one leg is still much longer than the straight-line gap, it drops that waypoint and routes again.
+5. It moves every OSM bus stop within 18 to 30 m of the route onto the line, then simplifies the geometry with Douglas-Peucker at a 1.2 m tolerance.
 
-Run `npm run network` to rebuild it. Responses are cached in `scripts/cache/`. Add `-- --refresh` to fetch fresh data.
+Run `npm run network` to rebuild it. The script caches API responses in `scripts/cache/`. Add `-- --refresh` to fetch fresh data.
 
 ## Stack
 
@@ -51,39 +51,40 @@ Run `npm run network` to rebuild it. Responses are cached in `scripts/cache/`. A
 | Buses | three.js, one instanced mesh per line, drawn inside MapLibre's WebGL context |
 | Web | `expo export -p web`, Workbox service worker, Vercel |
 
-The map is an [Expo DOM component](https://docs.expo.dev/guides/dom-components/) (`src/map/MapDom.tsx`, `'use dom'`). On web it renders inline. On iOS and Android Expo hosts it in a native WebView, so the 3D map is the same code everywhere. The sheet, panels, search and buttons are native React Native views.
+The map is an [Expo DOM component](https://docs.expo.dev/guides/dom-components/) in `src/map/MapDom.tsx`. On web it renders inline. On iOS and Android, Expo hosts it in a native WebView, so the 3D map is the same code everywhere. The sheet, panels, search and buttons are native React Native views.
 
 ## Speed and data use
 
 - An inline HTML skeleton paints in the first frame, before any JavaScript runs.
-- MapLibre and the map style load as separate chunks. three.js (157 KB brotli) loads only after the base map has drawn.
-- The critical path is about 700 KB brotli. On a repeat visit the service worker serves it from the device.
-- Map tiles and fonts are cache-first for 30 days. OpenFreeMap tile URLs are versioned, so a cached tile never goes stale.
-- The camera is bounded to Prishtina and the vector tiles stop at zoom 14, so panning around downloads very little.
-- The style has no sprite sheet. Stop pins and the bus glyph are drawn on a canvas.
-- All 97 buses render in 19 draw calls plus one for shadows.
+- MapLibre and the map style load as separate chunks. three.js, 157 KB with brotli, loads only after the base map has drawn.
+- The critical path is about 700 KB with brotli. On a repeat visit the service worker serves it from the device.
+- Map tiles and fonts are cache-first for 30 days. OpenFreeMap tile URLs carry a version, so a cached tile never goes stale.
+- The camera can't leave Prishtina and the vector tiles stop at zoom 14, so panning around downloads very little.
+- The style has no sprite sheet. The app draws stop pins and the bus glyph on a canvas.
+- All 97 buses render in 19 draw calls, plus one for shadows.
 
 ## Design
 
-The tokens live in `src/ui/theme.ts`:
+The tokens live in `src/ui/theme.ts`.
 
-- Neutrals with at least 5:1 text contrast.
-- One accent (lime `#B8F23A`), used only for "live", "Due" and the primary action.
-- A 4 pt spacing grid.
-- Nested radii follow inner = outer - padding (sheet 24, card 16, chip 8).
+- Neutral colours keep text contrast at 5:1 or better.
+- There is one accent, lime `#B8F23A`. It marks "live", "Due" and the primary action, and nothing else.
+- Spacing sits on a 4 pt grid.
+- Nested radii follow inner = outer - padding. The sheet is 24, cards are 16 and chips are 8.
 - One typeface, Hanken Grotesk, with tabular numbers wherever a number changes.
+- Each line badge picks dark or white text, whichever has more contrast on its colour.
 
-Some choices from the motion and UX principles I worked to:
+These are the motion and UX principles that changed the build:
 
 - **Anticipation and follow-through.** Buttons compress on press and spring back. A selected bus squashes, stretches, then settles.
 - **Slow in, slow out.** Buses accelerate and brake around stops instead of moving at a constant speed.
-- **Arcs.** Bus headings are eased, so turns trace curves. Camera moves use `flyTo` with a zoom arc.
-- **Staging.** Selecting something dims everything unrelated. The followed bus is drawn in a second pass, so a building or an underpass never hides it.
-- **Fitts's law.** Every row is at least 64 px tall, icon buttons are 48 px, and buses accept taps 30 px or more from their centre. Stop pins extend their hit area below the icon.
-- **Hick's and Miller's laws.** The home list groups 19 lines by number, arrivals stop at six, and next stops stop at seven.
+- **Arcs.** The bus layer eases headings, so turns trace curves. Camera moves use `flyTo`, which arcs the zoom.
+- **Staging.** Selecting something dims everything unrelated. The followed bus draws in a second pass, so a building or an underpass never hides it.
+- **Fitts's law.** Every row is at least 64 px tall and icon buttons are 48 px. A tap within 30 px of a bus selects it. Stop pins extend their hit area below the icon.
+- **Hick's and Miller's laws.** The home list groups the 19 lines by number. Arrivals stop at six and next stops at seven.
 - **Doherty threshold.** Taps respond within a frame. The skeleton covers the map load.
-- **Postel's law.** Search ignores accents, quotes and case. Typing "line 3" or "linja 3" works.
-- **Jakob's law.** The layout follows ride-hailing apps people already know: full-screen map, search on top, draggable bottom sheet.
+- **Postel's law.** Search ignores accents, quotes and case. "line 3" and "linja 3" both work.
+- **Jakob's law.** The layout copies ride-hailing apps people already know. The map fills the screen, search sits on top and details live in a draggable bottom sheet.
 - **Reduced motion.** With the OS setting on, Reanimated and the CSS skeleton skip their animations.
 
 ## Run it
@@ -95,7 +96,7 @@ npm install
 npx expo start        # press w for web, or scan the QR code with Expo Go
 ```
 
-`npm install` also runs `scripts/sync-maplibre-worker.mjs`. MapLibre v6 locates its web worker through `import.meta.url`, which Metro doesn't provide, so the script copies the worker to `public/` for web and embeds a copy for the native WebView.
+`npm install` also runs `scripts/sync-maplibre-worker.mjs`. MapLibre v6 finds its web worker through `import.meta.url`, which Metro doesn't provide. The script copies the worker to `public/` for web and embeds a copy for the native WebView.
 
 Other scripts:
 
@@ -108,7 +109,7 @@ npm run icons         # re-render app icons from SVG (needs Chrome)
 
 ## Deploy
 
-The web build is on Vercel's free tier. `vercel.json` sets the build command, the output folder, SPA rewrites and long cache headers for hashed assets.
+The web build runs on Vercel's free tier. `vercel.json` sets the build command, the output folder, SPA rewrites and long cache headers for hashed assets.
 
 ```bash
 npx vercel deploy --prod
@@ -121,7 +122,7 @@ npx eas-cli@latest build --platform all
 npx eas-cli@latest submit --platform ios
 ```
 
-The bundle identifier and package name (`com.alitinart.trafikuurban`) and the location permission text are in `app.json`.
+`app.json` holds the bundle identifier, the Android package name `com.alitinart.trafikuurban` and the location permission text.
 
 ## Project layout
 
@@ -139,9 +140,6 @@ scripts/                 data pipeline, icon renderer, worker sync
 
 ## Credits
 
-- Routes and stops: © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors, ODbL.
-- Map tiles: [OpenFreeMap](https://openfreemap.org).
-- Road routing during the build: [OSRM](https://project-osrm.org) demo server.
-- Typeface: Hanken Grotesk, SIL Open Font License.
+Routes and stops come from © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors under the ODbL. Map tiles are from [OpenFreeMap](https://openfreemap.org). The build routes roads with the [OSRM](https://project-osrm.org) demo server. Hanken Grotesk is under the SIL Open Font License.
 
-This is a portfolio project and isn't affiliated with Trafiku Urban or the Municipality of Prishtina.
+This is a portfolio project. It isn't affiliated with Trafiku Urban or the Municipality of Prishtina.
