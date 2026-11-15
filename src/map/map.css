@@ -1,0 +1,8 @@
+html, body, #root { height: 100%; margin: 0; padding: 0; background: #ECEEEA; overflow: hidden; overscroll-behavior: none; }
+body { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; }
+.map { position: absolute; inset: 0; isolation: isolate; } /* keep MapLibre z-indexes inside the map */
+.maplibregl-ctrl-attrib { font: 11px/1.4 ui-sans-serif, system-ui, -apple-system, sans-serif; }
+.maplibregl-ctrl-attrib a { color: #464B53; }
+/* attribution sits under the search bar on phones, bottom-right on desktop */
+.maplibregl-ctrl-bottom-right { top: calc(env(safe-area-inset-top) + 72px); bottom: auto; }
+@media (min-width: 900px) { .maplibregl-ctrl-bottom-right { top: auto; bottom: 0; } }
